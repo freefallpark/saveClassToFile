@@ -18,26 +18,41 @@ class data{
 		}
 };
 
+template <typename D>
+void saveDataTypeToFile(D*data, const std::string& fileName){
+    auto file = std::fstream(fileName,std::ios::out | std::ios::binary);
+    if(!file.is_open()){
+	    std::cout << "Failed to Open File '" + fileName + "'" << std::endl;
+    }
+    file.write((char*)data, sizeof(*data));
+    file.close();
+}
+
+template <typename D>
+void readDataFromFile(D*data, const std::string&fileName){
+    std::ifstream file(fileName, std::ios::out | std::ios::binary);
+    if(!file){
+        std::cout <<"Failed to Open File"<< std::endl;
+    }
+    file.read((char*)data,sizeof(*data));
+    file.close();
+    if(!file.good()){
+        std::cout << "failed to read file" << std::endl;
+    }
+}
 int main(){
 	data d; 
-	d.set_iVal(33);
+	d.set_iVal(1234);
 	d.getData();
-	std::cout << "size: " << sizeof(d) << std::endl;
-	auto myFile = std::fstream("file.binary",std::ios::out | std::ios::binary);
-	myFile.write((char*)&d, sizeof(d));
-	myFile.close();
+	saveDataTypeToFile(&d, "testFile.dat");
 
 	data readD;
+	std::cout << "readD Before Reading: " << std::endl;
 	readD.getData();
-	std::ifstream rf("file.binary", std::ios::out | std::ios::binary);
-	if(!rf){
-		std::cout << "Failed to open file" << std::endl;
-	}
-	rf.read((char*)&readD, sizeof(readD));
-	rf.close();
-	if(!rf.good()){
-		std::cout << "failed to read file" << std::endl;
-	}
+
+	readDataFromFile(&readD, "testFile.dat");
+
+	std::cout << "readD After Reading: " <<std::endl;
 	readD.getData();
 
 
